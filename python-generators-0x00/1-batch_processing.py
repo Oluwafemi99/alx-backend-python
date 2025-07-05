@@ -14,4 +14,4 @@ def batch_processing():
     for batch in stream_users_in_batches():
         filter_user = [user for user in batch if user['age'] > 25]
         for user in filter_user:
-            print(f'User: {user['name']}, Age: {user['age']}')
+            yield f'User: {user['name']}, Age: {user['age']}'
