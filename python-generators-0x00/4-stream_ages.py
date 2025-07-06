@@ -1,4 +1,4 @@
-def stream_user_ages(connection):
+def stream_user_ages():
     cursor = connection.cursor()
     cursor.execute("SELECT age FROM user_data")
     for (age,) in cursor:
