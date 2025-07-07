@@ -1,12 +1,14 @@
 import sqlite3
 import functools
+from datetime import datetime
 
 
 def log_queries():
     @functools.wraps()
     def wrapper(*args, **kwargs):
         query = kwargs.get('query') or args[0] if args else None
-        print(f'[LOG] running sql {query}')
+        timestamp = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+        print(f'{timestamp}[LOG] running sql {query}')
         return wrapper
 
 
