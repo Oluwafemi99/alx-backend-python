@@ -9,7 +9,7 @@ def log_queries():
         query = kwargs.get('query') or args[0] if args else None
         timestamp = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
         print(f'{timestamp}[LOG] running sql {query}')
-        return wrapper
+    return wrapper
 
 
 @log_queries
