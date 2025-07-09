@@ -1,5 +1,5 @@
 # fetch and process data in batches
-def stream_users_in_batches(batch_size):
+def stream_users_in_batches(connection, batch_size):
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM user_data')
     while True:
