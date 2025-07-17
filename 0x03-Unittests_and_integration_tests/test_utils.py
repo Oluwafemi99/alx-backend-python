@@ -60,6 +60,11 @@ class TestGetJson(unittest.TestCase):
 class TestMemoize(unittest.TestCase):
     """Unit tests for the memoize utility function."""
     def test_memoize(self):
+        """
+        Test that the memoize decorator caches the result of a method.
+        This ensures that a_method is only called once even if the 
+        memoized property is accessed multiple times.
+        """
 
         class TestClass:
 
