@@ -5,7 +5,12 @@ from parameterized import parameterized
 from unittest.mock import patch, Mock
 
 
-# Unit tests for utility functions: access_nested_map, get_json, and memoize
+"""Unit tests for utility functions: access_nested_map, get_json,
+and memoize to test that all utility functions are working as
+espected                                                       """
+
+
+# test for aceess_nested_map
 class TestAccessNestedMap(unittest.TestCase):
 
     @parameterized.expand([
