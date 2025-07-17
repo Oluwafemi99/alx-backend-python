@@ -11,6 +11,7 @@ from unittest.mock import patch, Mock
 
 # test for aceess_nested_map
 class TestAccessNestedMap(unittest.TestCase):
+    """Unit tests for the access_nested_map utility function."""
 
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
@@ -32,7 +33,7 @@ class TestAccessNestedMap(unittest.TestCase):
 
 
 class TestGetJson(unittest.TestCase):
-    # unit test for get_json funtions
+    # unit test for the get_json utility funtions
 
     @parameterized.expand([
         ("http://example.com", {"payload": True}),
@@ -53,6 +54,7 @@ class TestGetJson(unittest.TestCase):
 
 
 class TestMemoize(unittest.TestCase):
+    """Unit tests for the memoize utility function."""
     def test_memoize(self):
 
         class TestClass:
