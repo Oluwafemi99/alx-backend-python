@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
+"""Unit tests for utility functions: access_nested_map, get_json,
+and memoize to test that all utility functions are working as
+espected                                                       """
+
+# !/usr/bin/env python3
 import unittest
 from utils import access_nested_map, get_json, memoize
 from parameterized import parameterized
 from unittest.mock import patch, Mock
-
-
-"""Unit tests for utility functions: access_nested_map, get_json,
-and memoize to test that all utility functions are working as
-espected                                                       """
 
 
 # test for aceess_nested_map
