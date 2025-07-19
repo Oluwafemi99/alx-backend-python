@@ -156,39 +156,45 @@ class TestGithubOrgClient(unittest.TestCase):
     }
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration tests for GithubOrgClient"""
+    """Integration tests for the GithubOrgClient.public_repos method."""
 
     @classmethod
     def setUpClass(cls):
-        """Start patcher for requests.get and configure side effects"""
+        """Set up class-level mocks for requests.get with side effects."""
         cls.get_patcher = patch('requests.get')
         cls.mock_get = cls.get_patcher.start()
 
-        # Mock .json() responses based on URL
         def get_json_side_effect(url):
             if url == GithubOrgClient.ORG_URL.format(org="test_org"):
-                return MagicMock(json=lambda: cls.org_payload)
+                mock_response = MagicMock()
+                mock_response.json.return_value = cls.org_payload
+                return mock_response
             elif url == cls.org_payload["repos_url"]:
-                return MagicMock(json=lambda: cls.repos_payload)
+                mock_response = MagicMock()
+                mock_response.json.return_value = cls.repos_payload
+                return mock_response
             return MagicMock(json=lambda: None)
 
-        cls.mock_get.side_effect = lambda url: get_json_side_effect(url)
+        cls.mock_get.side_effect = get_json_side_effect
 
     @classmethod
     def tearDownClass(cls):
-        """Stop the requests.get patcher"""
+        """Tear down the requests.get patcher."""
         cls.get_patcher.stop()
 
     def test_public_repos(self):
-        """Test public_repos returns expected list"""
+        """Test that public_repos returns the expected list of repositories."""
         client = GithubOrgClient("test_org")
         self.assertEqual(client.public_repos(), self.expected_repos)
 
     def test_public_repos_with_license(self):
-        """Test public_repos filters by license"""
+        """Test that public_repos returns only repos with the specified 
+        license."""
         client = GithubOrgClient("test_org")
-        self.assertEqual(client.public_repos(license="apache-2.0"),
-                         self.apache2_repos)
+        self.assertEqual(
+            client.public_repos(license="apache-2.0"),
+            self.apache2_repos
+        )
 
 
 if __name__ == '__main__':
