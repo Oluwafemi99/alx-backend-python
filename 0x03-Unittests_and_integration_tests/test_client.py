@@ -8,9 +8,10 @@ This module tests that:
 - The test is parameterized to test multiple organization names.
 """
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, MagicMock
 from client import GithubOrgClient
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
+from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
 """
@@ -144,6 +145,50 @@ class TestGithubOrgClient(unittest.TestCase):
         """
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos
+    }
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Start patcher for requests.get and configure side effects"""
+        cls.get_patcher = patch('requests.get')
+        cls.mock_get = cls.get_patcher.start()
+
+        # Mock .json() responses based on URL
+        def get_json_side_effect(url):
+            if url == GithubOrgClient.ORG_URL.format(org="test_org"):
+                return MagicMock(json=lambda: cls.org_payload)
+            elif url == cls.org_payload["repos_url"]:
+                return MagicMock(json=lambda: cls.repos_payload)
+            return MagicMock(json=lambda: None)
+
+        cls.mock_get.side_effect = lambda url: get_json_side_effect(url)
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop the requests.get patcher"""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """Test public_repos returns expected list"""
+        client = GithubOrgClient("test_org")
+        self.assertEqual(client.public_repos(), self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """Test public_repos filters by license"""
+        client = GithubOrgClient("test_org")
+        self.assertEqual(client.public_repos(license="apache-2.0"),
+                         self.apache2_repos)
 
 
 if __name__ == '__main__':
