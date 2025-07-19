@@ -8,7 +8,7 @@ This module tests that:
 - The test is parameterized to test multiple organization names.
 """
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 from client import GithubOrgClient
 from parameterized import parameterized
 
@@ -61,6 +61,27 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(result, expected_result)
         mock_get_json.assert_called_once_with(
             f"https://api.github.com/orgs/{org_name}")
+        
+    def test_public_repos_url(self):
+        """ Test that _public_repos_url returns the correct repos_url.
+        Steps:
+        1. Patch the `.org` property to return a predefined dictionary.
+        2. Access the `_public_repos_url` property.
+        3. Assert that it returns the expected URL from the mock.
+        """
+        # Define the mocked payload
+        mock_payload = {"repos_url":
+                        "https://api.github.com/orgs/testorg/repos"}
+
+        # Use patch.object as a context manager to mock the `.org` property
+        with patch.object(GithubOrgClient, "org", new_callable=PropertyMock
+                          ) as mock_org:
+            mock_org.return_value = mock_payload  # Mocked return value
+
+            client = GithubOrgClient("testorg")
+            result = client._public_repos_url
+
+            self.assertEqual(result, mock_payload["repos_url"])
 
 
 if __name__ == '__main__':
