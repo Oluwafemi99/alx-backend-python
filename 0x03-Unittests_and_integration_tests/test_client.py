@@ -127,19 +127,17 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @parameterized.expand([
         (
-            "matching_license",
-            {"license": {"key": "my_license"}},
-            "my_license",
-            True
+            {"license": {"key": "my_license"}},  # repo
+            "my_license",                        # license_key
+            True                                 # expected
         ),
         (
-            "non_matching_license",
             {"license": {"key": "other_license"}},
             "my_license",
             False
         ),
     ])
-    def test_has_license(self, name, repo, license_key, expected):
+    def test_has_license(self, repo, license_key, expected):
         """
         Test GithubOrgClient.has_license returns True when the license matches,
         and False otherwise.
