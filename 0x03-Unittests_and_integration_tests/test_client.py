@@ -162,7 +162,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     def setUpClass(cls):
         """Set up mock requests.get with proper side effects."""
         cls.get_patcher = patch('requests.get')
-        mock_get = cls.get_patcher.start()
+        cls.mock_get = cls.get_patcher.start()
 
         def side_effect(url):
             if url == GithubOrgClient.ORG_URL.format(org="test_org"):
@@ -175,7 +175,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
                 return response
             return MagicMock(json=lambda: None)
 
-        mock_get.side_effect = side_effect
+        cls.mock_get.side_effect = side_effect
 
     @classmethod
     def tearDownClass(cls):
