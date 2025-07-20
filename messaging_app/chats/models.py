@@ -14,7 +14,7 @@ class User(AbstractUser):
                                editable=False, db_index=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    phone_number = models.IntegerField(max_length=20, null=True, blank=True)
+    phone_number = models.IntegerField(null=True, blank=True)
     password = models.CharField(max_length=50)
     email = models.EmailField(unique=True, null=False, db_index=True)
     role = models.CharField(choices=ROLE_CHOICES, null=False)
@@ -36,7 +36,7 @@ class Property(models.Model):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
-    price_per_night = models.DecimalField(decimal_places=2)
+    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -58,7 +58,7 @@ class Booking(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     status = models.CharField(max_length=25, choices=STATUS_CHOICES)
-    total_price = models.DecimalField(decimal_places=2)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
 
 
@@ -67,7 +67,7 @@ class Payment(models.Model):
                                   editable=False, db_index=True)
     booking_id = models.ForeignKey(Booking, on_delete=models.CASCADE,
                                    related_name='payments')
-    amount = models.DecimalField(decimal_places=2)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid_at = models.DateTimeField(auto_now_add=True)
 
 
