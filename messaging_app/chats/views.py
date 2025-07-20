@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from .models import Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer
 
@@ -10,6 +10,8 @@ from .serializers import MessageSerializer, ConversationSerializer
 class ConversationViewSet(viewsets.ModelViewSet):
     queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['participant__email']
 
     def create(self, request, *args, **kwargs):
         """
@@ -31,9 +33,11 @@ class ConversationViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class MessageViewset(viewsets.ModelViewSet):
+class MessageViewSet(viewsets.ModelViewSet):
     queryset = Message.objects.all()
     serializer_class = MessageSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['message_body', 'sender_id__email']
 
     def create(self, request, *args, **kwargs):
         """
