@@ -211,7 +211,6 @@ class TestIntegrationGithubOrgClient2(unittest.TestCase):
     def setUpClass(cls):
         """Set up mocks for requests.get to return appropriate fixture data."""
         cls.get_patcher = patch('requests.get')
-
         mock_get = cls.get_patcher.start()
         # Configure mock to return different payloads based on URL
         mock_get.side_effect = [
