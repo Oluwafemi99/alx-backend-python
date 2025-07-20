@@ -83,22 +83,6 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-# Model for Messages
-class Message(models.Model):
-    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                  editable=False, db_index=True)
-    sender_id = models.ForeignKey(User, on_delete=models.CASCADE,
-                                  related_name='sent_message')
-    recipient_id = models.ForeignKey(User, on_delete=models.CASCADE,
-                                     related_name='recieved_message')
-    message_body = models.TextField(max_length=220, null=False)
-    sent_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f'{self.sender_id.username} @ {self.sent_at}: {
-            self.message_body[:30]}'
-
-
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                        editable=False, db_index=True)
@@ -107,3 +91,23 @@ class Conversation(models.Model):
 
     def __str__(self):
         return f'conversation: {self.conversation_id}'
+
+
+# Model for Messages
+class Message(models.Model):
+    message_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                                  editable=False, db_index=True)
+    sender_id = models.ForeignKey(User, on_delete=models.CASCADE,
+                                  related_name='sent_message')
+    recipient_id = models.ForeignKey(User, on_delete=models.CASCADE,
+                                     related_name='recieved_message')
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE,
+                                     related_name='messages')
+
+    message_body = models.TextField(max_length=220, null=False)
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.sender_id.username} @ {self.sent_at}: {
+            self.message_body[:30]}'
+
