@@ -102,8 +102,7 @@ class Message(models.Model):
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                        editable=False, db_index=True)
-    participant_id = models.ForeignKey(User, on_delete=models.CASCADE,
-                                       related_name='conversations')
+    participant = models.ManyToManyField(User, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
