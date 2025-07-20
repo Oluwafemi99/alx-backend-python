@@ -84,7 +84,7 @@ class Review(models.Model):
 
 
 # Model for Messages
-class message(models.Model):
+class Message(models.Model):
     message_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                   editable=False, db_index=True)
     sender_id = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -99,7 +99,7 @@ class message(models.Model):
             self.message_body[:30]}'
 
 
-class conversation(models.Model):
+class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                                        editable=False, db_index=True)
     participant_id = models.ForeignKey(User, on_delete=models.CASCADE,
