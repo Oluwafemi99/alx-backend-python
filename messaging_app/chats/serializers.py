@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from models import Conversation, Message
+from .models import Conversation, Message
 from django.contrib.auth import get_user_model
 
 User = get_user_model
@@ -21,12 +21,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender_id = UserSerializer
-    recipient_id = UserSerializer
+    sender = serializers.StringRelatedField(read_only=True)
+    recipient = serializers.StringRelatedField(read_only=True)
+    message_preview = serializers.SerializerMethodField()
 
     class Meta:
         models = Message
         feilds = '__all__'
+
+    def validate_message_body(self, value):
+        if len(value.strip()) < 5:
+            raise serializers.ValidationError(
+                "Messagebody must be at least 5 characters long.")
+        return value
 
 
 class ConversationSerializer(serializers.ModelSerializer):
