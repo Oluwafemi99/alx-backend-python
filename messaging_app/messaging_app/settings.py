@@ -77,7 +77,11 @@ WSGI_APPLICATION = 'messaging_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': 'mydatabase',
+        'USER': 'root',
+        'PASSWORD': 'Oluwafemi1.',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 
