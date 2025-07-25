@@ -1,0 +1,90 @@
+{
+  "info": {
+    "name": "Messaging App Conversation & Auth Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register User",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/register/", "host": ["{{base_url}}"], "path": ["register"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"user1@example.com\", \"password\": \"testpass123\", \"username\": \"user1\", \"first_name\": \"User\", \"last_name\": \"One\"}"
+        }
+      }
+    },
+    {
+      "name": "Login (Get JWT Token)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": { "raw": "{{base_url}}/token/", "host": ["{{base_url}}"], "path": ["token"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\": \"user1@example.com\", \"password\": \"testpass123\"}"
+        }
+      }
+    },
+    {
+      "name": "Create Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/api/conversations/", "host": ["{{base_url}}"], "path": ["api", "conversations"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"participants\": [\"user1@example.com\", \"user2@example.com\"]}"
+        }
+      }
+    },
+    {
+      "name": "Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/api/messages/", "host": ["{{base_url}}"], "path": ["api", "messages"] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"conversation\": \"{{conversation_id}}\", \"recipient_id\": \"{{recipient_id}}\", \"message_body\": \"Hello!\"}"
+        }
+      }
+    },
+    {
+      "name": "Fetch Conversations",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/api/conversations/", "host": ["{{base_url}}"], "path": ["api", "conversations"] }
+      }
+    },
+    {
+      "name": "Fetch Messages for Conversation",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{jwt_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/api/conversations/{{conversation_id}}/messages/", "host": ["{{base_url}}"], "path": ["api", "conversations", "{{conversation_id}}", "messages"] }
+      }
+    },
+    {
+      "name": "Unauthorized Access Test",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{base_url}}/api/conversations/", "host": ["{{base_url}}"], "path": ["api", "conversations"] }
+      }
+    }
+  ]
+}
