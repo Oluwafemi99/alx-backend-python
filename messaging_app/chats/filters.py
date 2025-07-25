@@ -12,4 +12,4 @@ class Messagefilter(django_filters.FilterSet):
 
     class Meta:
         model = Message
-        feilds = ['user', 'start_time', 'end_time']
+        fields = ['user', 'start_time', 'end_time']
