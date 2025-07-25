@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework import viewsets, status, filters
 from .models import Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer
+from .permissions import IsParticipantOrSender
 
 
 # Create your views here.
@@ -11,6 +12,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['participant__email']
+    permission_classes = [IsParticipantOrSender]
 
     def get_queryset(self):
         return Conversation.objects.filter(participants=self.request.user)
@@ -21,7 +23,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        conversation = serializer.save()
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['get'])
@@ -39,15 +41,12 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['message_body', 'sender_id__email']
+    permission_classes = [IsParticipantOrSender]
 
     def get_queryset(self):
-        return Message.objects.filter(sender_id=self.request.user)
+        user = self.request.user
+        return Message.objects.filter(sender_id=user) | Message.objects.filter(
+            recipient_id=user)
 
-    def create(self, request, *args, **kwargs):
-        """
-        Send a message to a conversation.
-        """
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        message = serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def perform_create(self, serializer):
+        return serializer.save(sender_id=self.request.user)
