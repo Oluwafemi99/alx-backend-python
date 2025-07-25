@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework import viewsets, status, filters
 from .models import Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer
-from .permissions import IsParticipantOrSender
+from .permissions import IsParticipantOrSender, IsParticipantOfConversation
 
 
 # Create your views here.
@@ -12,7 +12,7 @@ class ConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['participant__email']
-    permission_classes = [IsParticipantOrSender]
+    permission_classes = [IsParticipantOrSender, IsParticipantOfConversation]
 
     def get_queryset(self):
         return Conversation.objects.filter(participants=self.request.user)

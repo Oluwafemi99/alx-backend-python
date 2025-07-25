@@ -17,3 +17,17 @@ and message sender and reciecer to only access the object
             return user in obj.participant.all()
 
         return False
+
+
+class IsParticipantOfConversation(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_autheticated
+
+    def has_object_permission(self, request, view, obj):
+
+        if hasattr(obj, 'participant'):
+            return request.user in obj.participant.all()
+        elif hasattr(obj, 'conversation'):
+            return request.user in obj.conversation.all()
+        return False
