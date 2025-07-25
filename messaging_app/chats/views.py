@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework import viewsets, status, filters
+from rest_framework import viewsets, status, filters, permissions
 from .models import Conversation, Message
 from .serializers import MessageSerializer, ConversationSerializer
 from .permissions import IsParticipantOrSender, IsParticipantOfConversation
@@ -12,7 +12,8 @@ class ConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['participant__email']
-    permission_classes = [IsParticipantOrSender, IsParticipantOfConversation]
+    permission_classes = [IsParticipantOrSender, IsParticipantOfConversation,
+                          permissions.IsAuthenticated]
 
     def get_queryset(self):
         return Conversation.objects.filter(participants=self.request.user)
@@ -32,7 +33,10 @@ class ConversationViewSet(viewsets.ModelViewSet):
         Get messages for a specific conversation
         """
         conversation = self.get_object()
-        messages = Message.objects.filter(conversation=conversation)
+        if request.user not in conversation.participants.all():
+            return Response({'detail: you are noy Authorised'},
+                            status=status.HTTP_403_FORBIDDEN)
+        messages = Message.objects.filter(conversation_id=conversation.id)
         serializer = MessageSerializer(messages, many=True)
         return Response(serializer.data)
 
@@ -41,7 +45,7 @@ class MessageViewSet(viewsets.ModelViewSet):
     serializer_class = MessageSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['message_body', 'sender_id__email']
-    permission_classes = [IsParticipantOrSender]
+    permission_classes = [IsParticipantOrSender, permissions.IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user

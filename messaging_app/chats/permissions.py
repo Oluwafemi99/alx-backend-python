@@ -22,10 +22,21 @@ and message sender and reciecer to only access the object
 class IsParticipantOfConversation(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        return request.user and request.user.is_autheticated
+        user = request.user
+        return user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
+        method = request.method
 
+        # allow coversation participant only for unsafe methods
+        if method in ['PUT', 'PATCH', 'DELETE']:
+            if hasattr(obj, 'participant'):
+                return request.user in obj.participant.all()
+
+            elif hasattr(obj, 'conversation'):
+                return request.user in obj.conversation.all()
+
+        # allow conversation participant only for safe methods like get, head
         if hasattr(obj, 'participant'):
             return request.user in obj.participant.all()
         elif hasattr(obj, 'conversation'):
