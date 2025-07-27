@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -30,8 +30,41 @@ class RestrictAccessByTimeMiddleware:
 
 
 class OffensiveLanguageMiddleware:
+    message_counts = []
+
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        
+        # for only post request
+        if request.method == 'POST':
+            ip = self.get_client_ip(request)
+            now = datetime.now()
+            window_start = now - timedelta(minutes=1)
+
+            # clean old entries
+            if ip in self.message_counts:
+                self.message_counts[ip] = [
+                    t for t in self.message_counts[ip] if t > window_start
+                ]
+            else:
+                self.message_counts[ip] = []
+
+            # check limit
+            if len(self.message_counts[ip]) >= 5:
+                return Response({'Error: request too many times'},
+                                status=status.HTTP_403_FORBIDDEN)
+
+            # Record the message
+            self.message_counts[ip].append(now)
+
+        response = self.get_response(request)
+        return response
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[0]
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
