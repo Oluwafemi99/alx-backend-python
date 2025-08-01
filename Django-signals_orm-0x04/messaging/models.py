@@ -35,10 +35,3 @@ class Notification(models.Model):
     def __str__(self):
         return f'Notification for {self.user}, Message: {self.message.
                                                          message_id}'
-
-
-# signal to create notification when a new message is triggered
-@receiver(post_save, sender=Message)
-def create_notification_on_message(sender, instance, created, **kwargs):
-    if created:
-        Notification.objects.create(user=instance.receiver, message=instance)
