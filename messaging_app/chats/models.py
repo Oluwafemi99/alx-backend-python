@@ -110,4 +110,3 @@ class Message(models.Model):
     def __str__(self):
         return f'{self.sender_id.username} @ {self.sent_at}: {
             self.message_body[:30]}'
-
