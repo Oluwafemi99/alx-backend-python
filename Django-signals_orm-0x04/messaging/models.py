@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from django.contrib.auth import get_user_model
+from .managers import UnreadMessagesManager
 
 User = get_user_model()
 
@@ -19,11 +20,13 @@ class Message(models.Model):
     parent_message = models.ForeignKey('self', on_delete=models.CASCADE,
                                        related_name='replies', null=True,
                                        blank=True)
-    unread = models.BooleanField(default=False)
+    read = models.BooleanField(default=False)
+    unread = UnreadMessagesManager()
 
     def __str__(self):
         return f'From {self.sender} To {self.receiver}'
 
+# method to retrieves all message replies
     def get_all_replies(self):
         # recursive fetch for all replies
         replies = []

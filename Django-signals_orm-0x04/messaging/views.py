@@ -5,7 +5,6 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .models import Message
-from .managers import UnreadMessagesManager
 
 
 # Create your views here.
@@ -30,7 +29,7 @@ def threaded_messages(request):
 def inbox(request):
     user_id = request.user.id
     # Simulate .only() by passing fields to the manager
-    with UnreadMessagesManager(user_id, only_fields=[
+    with Message.unread.unread_for_user(user_id, only_fields=[
         'id', 'sender_id', 'content', 'sent_at'
     ]) as unread_messages:
         return render(request, 'inbox.html', {'messages': unread_messages})
