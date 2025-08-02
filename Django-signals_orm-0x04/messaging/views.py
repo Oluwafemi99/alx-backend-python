@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+from .models import Message
 
 
 # Create your views here.
@@ -14,3 +15,12 @@ def delete_user(request):
     logout(request)
     user.delete()
     return HttpResponse('Your accont has been succefully deleted')
+
+
+# view for threaded message replies
+def threaded_messages(request):
+    # Fetch root messages and prefetch replies
+    messages = Message.objects.filter(
+        parent_message__isnull=True).select_related(
+            'sender', 'receiver').prefetch_related('replies')
+    return render(request, 'threaded_messages.html', {'messages': messages})
