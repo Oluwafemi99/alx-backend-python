@@ -21,6 +21,6 @@ def delete_user(request):
 def threaded_messages(request):
     # Fetch root messages and prefetch replies
     messages = Message.objects.filter(
-        parent_message__isnull=True).select_related(
+        parent_message__isnull=True, sender=request.user).select_related(
             'sender', 'receiver').prefetch_related('replies')
     return render(request, 'threaded_messages.html', {'messages': messages})
