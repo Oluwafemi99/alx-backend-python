@@ -19,6 +19,7 @@ class Message(models.Model):
     parent_message = models.ForeignKey('self', on_delete=models.CASCADE,
                                        related_name='replies', null=True,
                                        blank=True)
+    read = models.BooleanField(default=False)
 
     def __str__(self):
         return f'From {self.sender} To {self.receiver}'
