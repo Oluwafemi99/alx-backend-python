@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from .models import Message
+from django.views.decorators.cache import cache_page
 
 
 # Create your views here.
@@ -18,6 +19,8 @@ def delete_user(request):
 
 
 # view for threaded message replies
+@login_required
+@cache_page(60)
 def threaded_messages(request):
     # Fetch root messages and prefetch replies
     messages = Message.objects.filter(
@@ -26,6 +29,8 @@ def threaded_messages(request):
     return render(request, 'threaded_messages.html', {'messages': messages})
 
 
+@login_required
+@cache_page(60)
 def inbox(request):
     user_id = request.user.id
     # Simulate .only() by passing fields to the manager
