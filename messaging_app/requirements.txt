@@ -1,5 +1,8 @@
-Django>=3.2,<5.0
+Django>=5.1,<5.2
 djangorestframework
 gunicorn
 psycopg2-binary
 requests
+djangorestframework-simplejwt
+django-filter==23.5
+drf-nested-routers

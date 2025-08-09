@@ -17,7 +17,7 @@ class User(AbstractUser):
     phone_number = models.IntegerField(null=True, blank=True)
     password = models.CharField(max_length=50)
     email = models.EmailField(unique=True, null=False, db_index=True)
-    role = models.CharField(choices=ROLE_CHOICES, null=False)
+    role = models.CharField(choices=ROLE_CHOICES, null=False, max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Using email as login
@@ -108,5 +108,4 @@ class Message(models.Model):
     sent_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.sender_id.username} @ {self.sent_at}: {
-            self.message_body[:30]}'
+        return f'{self.sender_id.username} @ {self.sent_at}: {self.message_body[:30]}'
