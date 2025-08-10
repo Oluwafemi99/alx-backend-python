@@ -80,15 +80,12 @@ WSGI_APPLICATION = 'messaging_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DB', 'messaging_db'),
-        'USER': os.getenv('MYSQL_USER', 'messaging_user'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD', 'Oluwafemi1.'),
-        'HOST': os.getenv('MYSQL_HOST', 'db'),
-        'PORT': os.getenv('MYSQL_PORT', '3306'),
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
+        'USER': 'root',
+        'PASSWORD': 'Oluwafemi1.',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
 

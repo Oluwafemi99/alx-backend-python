@@ -6,4 +6,4 @@ requests
 djangorestframework-simplejwt
 django-filter==23.5
 drf-nested-routers
-mysqlclient==2.1.1
+# mysqlclient==2.1.1
