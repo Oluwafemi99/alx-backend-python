@@ -10,14 +10,13 @@ class User(AbstractUser):
         ('HOST', 'host'),
         ('ADMIN', 'admin')
     ]
-    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                               editable=False, db_index=True)
+    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.IntegerField(null=True, blank=True)
     password = models.CharField(max_length=50)
     email = models.EmailField(unique=True, null=False, db_index=True)
-    role = models.CharField(choices=ROLE_CHOICES, null=False)
+    role = models.CharField(choices=ROLE_CHOICES, null=False, max_length=50)
     created_at = models.DateTimeField(auto_now_add=True)
 
     # Using email as login
@@ -29,10 +28,8 @@ class User(AbstractUser):
 
 
 class Property(models.Model):
-    property_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                   editable=False, db_index=True)
-    host_id = models.ForeignKey(User, on_delete=models.CASCADE,
-                                related_name='property')
+    property_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    host_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='property')
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=255)
     description = models.CharField(max_length=255)
@@ -50,7 +47,7 @@ class Booking(models.Model):
         ('CANCELLED', 'cancelled')
     ]
     booking_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                  editable=False, db_index=True)
+                                  editable=False, db_default=True)
     property_id = models.ForeignKey(Property, on_delete=models.CASCADE,
                                     related_name='bookings')
     user_id = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -63,29 +60,23 @@ class Booking(models.Model):
 
 
 class Payment(models.Model):
-    payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                  editable=False, db_index=True)
-    booking_id = models.ForeignKey(Booking, on_delete=models.CASCADE,
-                                   related_name='payments')
+    payment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    booking_id = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     paid_at = models.DateTimeField(auto_now_add=True)
 
 
 class Review(models.Model):
-    review_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                 editable=False, db_index=True)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE,
-                                related_name='review')
-    property_id = models.ForeignKey(Property, on_delete=models.CASCADE,
-                                    related_name='review')
+    review_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review')
+    property_id = models.ForeignKey(Property, on_delete=models.CASCADE, related_name='review')
     rating = models.IntegerField(choices=[(i, i)for i in range(1, 6)])
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Conversation(models.Model):
-    conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                       editable=False, db_index=True)
+    conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
     participants = models.ManyToManyField(User, related_name='conversations')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -104,9 +95,8 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE,
                                      related_name='messages')
 
-    message_body = models.CharField(max_length=255, null=False)
+    message_body = models.TextField(max_length=220, null=False)
     sent_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.sender_id.username} @ {self.sent_at}: {
-            self.message_body[:30]}'
+        return f'{self.sender_id.username} @ {self.sent_at}: {self.message_body[:30]}'
