@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: django-container
-        image:  oluwafemi99/django-messaging-app:latest
+        image: oluwafemi99/django-messaging-app:latest
         ports:
         - containerPort: 8000
         env:
@@ -28,12 +28,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: messaging-service
+  name: django-messaging-app
 spec:
   selector:
     app: messaging
+  type: NodePort
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-  type: ClusterIP
+      nodePort: 31234
