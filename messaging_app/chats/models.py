@@ -47,7 +47,7 @@ class Booking(models.Model):
         ('CANCELLED', 'cancelled')
     ]
     booking_id = models.UUIDField(primary_key=True, default=uuid.uuid4,
-                                  editable=False, db_default=True)
+                                  editable=False, db_index=True)
     property_id = models.ForeignKey(Property, on_delete=models.CASCADE,
                                     related_name='bookings')
     user_id = models.ForeignKey(User, on_delete=models.CASCADE,
@@ -95,7 +95,7 @@ class Message(models.Model):
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE,
                                      related_name='messages')
 
-    message_body = models.TextField(max_length=220, null=False)
+    message_body = models.TextField(null=False)
     sent_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
