@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-messaging-app
+  name: django-blue
   labels:
     app: messaging
 spec:
@@ -28,13 +28,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: django-messaging-app
+        name: django-blue
 spec:
   selector:
     app: messaging
-  type: NodePort
   ports:
     - protocol: TCP
       port: 8000
       targetPort: 8000
-      nodePort: 31234

@@ -1,0 +1,2 @@
+kucectl apply -f ingress.yaml
+
