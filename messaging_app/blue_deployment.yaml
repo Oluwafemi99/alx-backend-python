@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: django-container
-        image: oluwafemi99/django-messaging-app:latest
+        image: oluwafemi99/django-messaging-app:v2.0
         ports:
         - containerPort: 8000
         env:
@@ -28,7 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-        name: django-blue
+  name: django-blue
 spec:
   selector:
     app: messaging
