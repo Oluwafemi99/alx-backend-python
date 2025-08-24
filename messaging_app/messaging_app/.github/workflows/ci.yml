@@ -1,0 +1,97 @@
+name: CI - Django Tests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u${{ secrets.MYSQL_USER }} -p${{ secrets.MYSQL_PASSWORD }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    env:
+      DEBUG: "True"
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: "localhost,127.0.0.1"
+      CHAPA_SECRET_KEY: ${{ secrets.CHAPA_SECRET_KEY }}
+
+      MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+      MYSQL_USER: ${{ secrets.MYSQL_USER }}
+      MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+      MYSQL_HOST: 127.0.0.1
+      MYSQL_PORT: 3306
+
+      DJANGO_SETTINGS_MODULE: messaging_app.settings
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        working-directory: messaging_app
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-django mysqlclient python-dotenv
+          pip install flake8 coverage pytest-cov
+
+      - name: Run flake8 (lint check)
+        working-directory: messaging_app
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..10}; do
+            nc -z 127.0.0.1 3306 && echo "MySQL is up!" && break
+            echo "Waiting for MySQL..."
+            sleep 5
+          done
+
+      - name: Run migrations
+        working-directory: messaging_app
+        run: |
+          python manage.py migrate --noinput
+
+      - name: Run tests with coverage
+        working-directory: messaging_app
+        run: |
+          pytest --ds=messaging_app.settings \
+                 --cov=. --cov-report=xml --cov-report=html \
+                 --junitxml=report.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: messaging_app/htmlcov
+
+      - name: Upload JUnit test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-report
+          path: messaging_app/report.xml
+
