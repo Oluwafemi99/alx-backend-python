@@ -19,13 +19,13 @@ pipeline {
             steps {
                 sh 'python -m venv venv'
                 sh '. venv/bin/activate && pip install -U pip setuptools wheel'
-                sh '. venv/bin/activate && pip install -r requirements.txt'
+                sh 'pip3 install -r messaging_app/requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh '. venv/bin/activate && pytest --junitxml=report.xml'
+                sh '. venv/bin/activate && pytest messaging_app --junitxml=messaging_app/report.xml'
             }
             post {
                 always {
